@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  PromptManager
-//
-//  Created by Александр Лагутин on 03/04/2026.
-//
-
 import SwiftUI
 
 struct ContentView: View {

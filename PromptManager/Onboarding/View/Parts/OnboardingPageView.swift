@@ -8,7 +8,7 @@ struct OnboardingPageView: View {
         
         VStack(spacing: 18) {
             Spacer()
-                .frame(height: 150)
+                .frame(height: UIScreen.main.isSmallScreen ? 80 : 150)
 
             ZStack {
                 RoundedRectangle(cornerRadius: 32, style: .continuous)
@@ -27,22 +27,25 @@ struct OnboardingPageView: View {
             .frame(height: 180)
             .shadow(color: .black.opacity(0.22), radius: 20, y: 10)
 
-            Text(title)
-                .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.top, 4)
+            VStack(spacing: 18) {
+                Text(title)
+                    .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
 
-            Text(description)
-                .font(.system(.body, design: .rounded))
-                .foregroundStyle(.white.opacity(0.92))
-                .multilineTextAlignment(.center)
-                .lineSpacing(3)
-                .padding(.horizontal, 10)
+                Text(description)
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+                    .padding(.horizontal, 10)
+            }
 
             Spacer()
         }
-//        .background(.red)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.top, 24)
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct OnboardingView: View {
     
     @StateObject var viewModel: OnboardingViewModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     private let backgroundGradient = LinearGradient(
         colors: [
@@ -32,7 +33,7 @@ struct OnboardingView: View {
             
             Button {
                 withAnimation {
-                    viewModel.nextPage()
+                    viewModel.nextPage(coordinator: coordinator)
                 }
             } label: {
                 Text(viewModel.selection == viewModel.lastPageID ? "Get Started" : "Next")
@@ -46,7 +47,6 @@ struct OnboardingView: View {
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
         .background(backgroundGradient)
-        .environmentObject(viewModel)
     }
 }
 

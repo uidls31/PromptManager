@@ -1,14 +1,23 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var isOnboardingComplete = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if isOnboardingComplete {
+            MainView()
+        } else {
+            let viewModel = OnboardingViewModel()
+            OnboardingView(viewModel: viewModel)
+                .onAppear {
+                    viewModel.onFinish = {
+                        withAnimation {
+                            isOnboardingComplete = true
+                        }
+                    }
+                }
         }
-        .padding()
     }
 }
 

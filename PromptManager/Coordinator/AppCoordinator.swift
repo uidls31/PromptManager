@@ -19,7 +19,7 @@ class AppCoordinator: ObservableObject {
     }
     
     func finishOnboarding() {
-        userDefaultsService.set(true, for: .hasCompletedOnboarding)
+        userDefaultsService.setBool(true, for: .hasCompletedOnboarding)
         currentRoute = .main
     }
     

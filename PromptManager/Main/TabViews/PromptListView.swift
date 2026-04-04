@@ -8,15 +8,15 @@ struct PromptListView: View {
     @State private var showingAddPrompt = false
     
     var body: some View {
+        let displayedPrompts = viewModel.filteredPromts(showOnlyFavorites: showOnlyFavorites)
+        
         NavigationStack {
-            let displayedPrompts = viewModel.filteredPromts(showOnlyFavorites: showOnlyFavorites)
             Group {
                 if displayedPrompts.isEmpty {
                     ContentUnavailableView(
-                        "No favorites",
-                        systemImage: "star",
-                        description: Text("Add prompts to your favorites by clicking on the star in the library.")
-                    )
+                        showOnlyFavorites ? "No Favorites": "No Prompts" ,
+                        systemImage: showOnlyFavorites ? "star": "books.vertical",
+                        description: Text(showOnlyFavorites ? "Add favorite prompts by clicking on the star in the library." : "Add prompts by clicking on the plus in the library."))
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 16) {
@@ -54,7 +54,6 @@ struct PromptListView: View {
                         } label: {
                             Image(systemName: "plus")
                         }
-                        .accessibilityLabel("Add prompt")
                     }
                 }
             }

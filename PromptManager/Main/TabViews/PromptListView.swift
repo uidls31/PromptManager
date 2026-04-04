@@ -2,11 +2,11 @@ import SwiftUI
 
 struct PromptListView: View {
     @EnvironmentObject private var viewModel: PromptViewModel
-
+    
     let showOnlyFavorites: Bool
-
+    
     @State private var showingAddPrompt = false
-
+    
     var body: some View {
         NavigationStack {
             let displayedPrompts = viewModel.filteredPromts(showOnlyFavorites: showOnlyFavorites)
@@ -21,15 +21,20 @@ struct PromptListView: View {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(displayedPrompts) { prompt in
-                                PromptCardView(
-                                    prompt: prompt,
-                                    onFavoriteTap: {
-                                        viewModel.toggleFavorite(prompt)
-                                    },
-                                    onDeleteTap: {
-                                        viewModel.deletePrompt(prompt)
-                                    }
-                                )
+                                NavigationLink {
+                                    PromptDetailView(prompt: prompt)
+                                } label: {
+                                    PromptCardView(
+                                        prompt: prompt,
+                                        onFavoriteTap: {
+                                            viewModel.toggleFavorite(prompt)
+                                        },
+                                        onDeleteTap: {
+                                            viewModel.deletePrompt(prompt)
+                                        }
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                         .padding()

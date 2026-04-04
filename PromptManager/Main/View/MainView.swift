@@ -1,16 +1,17 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var viewModel = PromptViewModel()
+    
+    @StateObject var viewModel = PromptViewModel()
 
     var body: some View {
         TabView {
-            PromptListView(showOnlyFavorites: false)
+            PromptListView(viewModel: viewModel, showOnlyFavorites: false)
                 .tabItem {
                     Label("Library", systemImage: "books.vertical")
                 }
             
-            PromptListView(showOnlyFavorites: true)
+            PromptListView(viewModel: viewModel, showOnlyFavorites: true)
                 .tabItem {
                     Label("Favorites", systemImage: "star.fill")
                 }
@@ -20,7 +21,6 @@ struct MainView: View {
                     Label("Settings", systemImage: "gear")
                 }
         }
-        .environmentObject(viewModel)
         
     }
 }

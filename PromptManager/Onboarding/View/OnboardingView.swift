@@ -2,8 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     
-    @StateObject var viewModel = OnboardingViewModel()
-    @EnvironmentObject private var coordinator: AppCoordinator
+    @ObservedObject var viewModel: OnboardingViewModel
     
     var body: some View {
         VStack {
@@ -23,7 +22,7 @@ struct OnboardingView: View {
             
             Button {
                 withAnimation {
-                    viewModel.nextPage(coordinator: coordinator)
+                    viewModel.nextPage()
                 }
             } label: {
                 Text(viewModel.selection == viewModel.lastPageID ? "Get Started" : "Next")
@@ -42,7 +41,6 @@ struct OnboardingView: View {
 
 
 #Preview {
-    OnboardingView()
-        .environmentObject(AppCoordinator())
+    OnboardingView(viewModel: OnboardingViewModel())
 }
 

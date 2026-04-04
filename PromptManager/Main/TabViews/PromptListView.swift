@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct PromptListView: View {
-    @EnvironmentObject private var viewModel: PromptViewModel
+    @ObservedObject var viewModel: PromptViewModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     let showOnlyFavorites: Bool
     
@@ -10,7 +11,7 @@ struct PromptListView: View {
     var body: some View {
         let displayedPrompts = viewModel.filteredPromts(showOnlyFavorites: showOnlyFavorites)
         
-        NavigationStack {
+        NavigationStack(path: $coordinator.path) {
             Group {
                 if displayedPrompts.isEmpty {
                     ContentUnavailableView(
@@ -21,9 +22,9 @@ struct PromptListView: View {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(displayedPrompts) { prompt in
-                                NavigationLink {
-                                    PromptDetailView(prompt: prompt)
-                                } label: {
+                                Button(action: {
+                                    coordinator.push(.detail(prompt))
+                                }, label: {
                                     PromptCardView(
                                         prompt: prompt,
                                         onFavoriteTap: {
@@ -33,7 +34,8 @@ struct PromptListView: View {
                                             viewModel.deletePrompt(prompt)
                                         }
                                     )
-                                }
+                                })
+                                
                                 .buttonStyle(.plain)
                             }
                         }
@@ -41,28 +43,32 @@ struct PromptListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddPrompt) {
-                AddPromptView()
-                    .environmentObject(viewModel)
-            }
             .navigationTitle(showOnlyFavorites ? "Favorites" : "Library")
-            .toolbar {
+            .toolbar(content: {
                 if !showOnlyFavorites {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            showingAddPrompt = true
+                            coordinator.presentSheet(.addPrompt)
                         } label: {
                             Image(systemName: "plus")
                         }
+                        
                     }
                 }
-            }
+            })
             .background(.appBackground)
+            .navigationDestination(for: AppScreen.self) { screen in
+                switch screen {
+                case .detail(let prompt):
+                    PromptDetailView(prompt: prompt)
+                }
+            }
         }
     }
 }
 
 #Preview {
-    PromptListView(showOnlyFavorites: false)
-        .environmentObject(PromptViewModel())
+    PromptListView(viewModel: PromptViewModel(), showOnlyFavorites: false)
+//        .environmentObject(PromptViewModel())
+        .environmentObject(AppCoordinator())
 }

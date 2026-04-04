@@ -1,6 +1,6 @@
 import Foundation
 
-struct Prompt: Identifiable, Codable, Equatable {
+struct Prompt: Identifiable, Codable, Equatable, Hashable {
     var id: UUID
     var title: String
     var content: String

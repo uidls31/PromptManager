@@ -5,6 +5,8 @@ final class OnboardingViewModel: ObservableObject {
     
     @Published var selection: OnboardingPage.ID?
     
+    var onFinishOnboarding: (() -> Void)?
+    
     var lastPageID: OnboardingPage.ID? { pages.last?.id }
     
     let pages: [OnboardingPage] = [
@@ -30,14 +32,14 @@ final class OnboardingViewModel: ObservableObject {
         selection = pages.first?.id
     }
     
-    func nextPage(coordinator: AppCoordinator) {
+    func nextPage() {
         guard let current = selection,
               let currentIndex = pages.firstIndex(where: { $0.id == current }) else { return }
         
         if currentIndex < pages.count - 1 {
             selection = pages[currentIndex + 1].id
         } else {
-            coordinator.finishOnboarding()
+            onFinishOnboarding?()
         }
     }
 }

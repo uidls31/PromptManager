@@ -9,27 +9,28 @@ struct SettingsView: View {
     var body: some View {
             Form {
                 Section("Legal") {
-                    Link(destination: URL(string: "https://apple.com")!) {
+                    Link(destination: viewModel.termsOfServiceURL) {
                         Label("Terms of Service", systemImage: "doc.text")
                             .foregroundStyle(.primary)
                     }
-                    .listRowBackground(Color(uiColor: .systemBackground).opacity(0.5))
+                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
 
-                    Link(destination: URL(string: "https://apple.com")!) {
+                    Link(destination: viewModel.privacyPolicyURL) {
                         Label("Privacy Policy", systemImage: "hand.raised")
                             .foregroundStyle(.primary)
                     }
-                    .listRowBackground(Color(uiColor: .systemBackground).opacity(0.5))
+                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
 
                 Section("Feedback") {
                     Button {
+                        viewModel.didTapRateUs()
                         requestReview()
                     } label: {
                         Label("Rate Us", systemImage: "star")
                             .foregroundStyle(.primary)
                     }
-                    .listRowBackground(Color(uiColor: .systemBackground).opacity(0.5))
+                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
             }
             .scrollContentBackground(.hidden)

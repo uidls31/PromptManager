@@ -50,6 +50,7 @@ struct PromptDetailView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 8)
+                .disabled(copyButtonTitle == "Copied!")
             }
             .padding()
         }
@@ -78,10 +79,12 @@ struct PromptDetailView: View {
 #Preview {
     NavigationStack {
         PromptDetailView(
-            prompt: Prompt(
+            prompt: Prompt(id: UUID(),
                 title: "Preview",
                 content: "Long sample prompt text for preview.",
-                category: .development
+                category: .development,
+                           isFavorite: true,
+                           creationDate: Date()
             ), viewModel: PromptViewModel(userDefaultsService: UserDefaultsService())
         )
         

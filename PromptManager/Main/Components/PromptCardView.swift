@@ -62,25 +62,16 @@ struct PromptCardView: View {
         }
         .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
     }
-
-    private func categoryColor(for category: String) -> Color {
-        let palette: [Color] = [
-            .blue, .purple, .indigo, .teal, .orange, .pink, .mint,
-        ]
-        var hasher = Hasher()
-        hasher.combine(category)
-        let index = abs(hasher.finalize()) % palette.count
-        return palette[index]
-    }
 }
 
 #Preview {
     PromptCardView(
-        prompt: Prompt(
+        prompt: Prompt(id: UUID(),
             title: "Код-ревью",
             content: "Проанализируй этот код на баги, риски и читаемость. Ещё немного текста для второй строки.",
             category: .development,
-            isFavorite: true
+                       isFavorite: true,
+                       creationDate: Date()
         ),
         onFavoriteTap: {},
         onDeleteTap: {}

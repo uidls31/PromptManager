@@ -6,6 +6,7 @@ struct MainView: View {
     @ObservedObject var settingsViewModel: SettingsViewModel
     
     @EnvironmentObject private var coordinator: AppCoordinator
+    
 
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {
@@ -49,4 +50,5 @@ struct MainView: View {
 
 #Preview {
     MainView(promptViewModel: PromptViewModel(userDefaultsService: UserDefaultsService()), settingsViewModel: SettingsViewModel(termsOfServiceURL: URL(string: "")!, privacyPolicyURL: URL(string: "")!))
+        .environmentObject(AppCoordinator(userDefaultsService: UserDefaultsService()))
 }

@@ -1,24 +1,6 @@
 import Combine
 import SwiftUI
 
-enum AppState {
-    case onboarding, main
-}
-
-enum AppScreen: Hashable {
-    case detail(Prompt)
-}
-
-enum AppSheet: String, Identifiable {
-    case addPrompt
-    var id: String {
-        self.rawValue
-    }
-}
-
-enum MainTab: Hashable {
-    case library, favorites, settings
-}
 
 class AppCoordinator: ObservableObject {
     
@@ -35,7 +17,7 @@ class AppCoordinator: ObservableObject {
     private var sharedPromptViewModel: PromptViewModel?
     private var sharedSettingsViewModel: SettingsViewModel?
     
-    init(userDefaultsService: UserDefaultsServiceProtocol = UserDefaultsService.shared) {
+    init(userDefaultsService: UserDefaultsServiceProtocol) {
         self.userDefaultsService = userDefaultsService
         let hasCompletedOnboarding = userDefaultsService.bool(for: .hasCompletedOnboarding)
         currentState = hasCompletedOnboarding ? .main : .onboarding
@@ -90,41 +72,44 @@ extension AppCoordinator {
     }
     
     func buildMain() -> some View {
-        if sharedPromptViewModel == nil {
-            let viewModel = PromptViewModel(userDefaultsService: userDefaultsService)
-            
-            viewModel.onAddPrompt = { [weak self] in
-                self?.presentSheet(.addPrompt)
-            }
-            
-            viewModel.onPromptSelected = { [weak self] prompt in
-                self?.push(.detail(prompt))
-            }
-            sharedPromptViewModel = viewModel
-            
+        let promptVM: PromptViewModel
+        if let existing = sharedPromptViewModel {
+            promptVM = existing
+        } else {
+            promptVM = PromptViewModel(userDefaultsService: userDefaultsService)
+            promptVM.onAddPrompt = { [weak self] in self?.presentSheet(.addPrompt) }
+            promptVM.onPromptSelected = { [weak self] prompt in self?.push(.detail(prompt)) }
+            sharedPromptViewModel = promptVM
         }
         
-        if sharedSettingsViewModel == nil {
+        let settingsVM: SettingsViewModel
+        if let existing = sharedSettingsViewModel {
+            settingsVM = existing
+        } else {
             guard let termsURL = URL(string: "https://apple.com"),
-                  let privacyURL = URL(string: "https://apple.com") else {
-                fatalError("🛑") }
-            
-            sharedSettingsViewModel = SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
+                  let privacyURL = URL(string: "https://apple.com") else { fatalError("🛑")}
+            settingsVM = SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
+            sharedSettingsViewModel = settingsVM
         }
-        return MainView(promptViewModel: sharedPromptViewModel!, settingsViewModel: sharedSettingsViewModel!)
+        
+        return MainView(promptViewModel: promptVM, settingsViewModel: settingsVM)
     }
     
     func build(screen: AppScreen) -> some View {
+        guard let viewModel = sharedPromptViewModel else { fatalError("🛑") }
+        
         switch screen {
         case .detail(let prompt):
-            return PromptDetailView(prompt: prompt, viewModel: sharedPromptViewModel ?? PromptViewModel(userDefaultsService: userDefaultsService))
+            return PromptDetailView(prompt: prompt, viewModel: viewModel)
         }
     }
     
     func build(sheet: AppSheet) -> some View {
+        guard let viewModel = sharedPromptViewModel else { fatalError("🛑") }
+        
         switch sheet {
         case .addPrompt:
-            return AddPromptView(viewModel: sharedPromptViewModel ?? PromptViewModel(userDefaultsService: userDefaultsService))
+            return AddPromptView(viewModel: viewModel)
         }
     }
     

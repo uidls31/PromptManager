@@ -27,7 +27,7 @@ final class PromptViewModel: ObservableObject {
     }
     
     func addPrompt(title: String, content: String, category: Category) {
-        let newPrompt = Prompt(title: title, content: content, category: category)
+        let newPrompt = Prompt(id: UUID(),title: title, content: content, category: category, isFavorite: false, creationDate: Date())
         prompts.insert(newPrompt, at: 0)
         savePrompts()
     }

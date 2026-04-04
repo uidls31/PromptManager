@@ -2,18 +2,8 @@ import SwiftUI
 
 struct OnboardingView: View {
     
-    @StateObject var viewModel: OnboardingViewModel
+    @StateObject var viewModel = OnboardingViewModel()
     @EnvironmentObject private var coordinator: AppCoordinator
-    
-    private let backgroundGradient = LinearGradient(
-        colors: [
-            Color(red: 0.33, green: 0.29, blue: 0.98),
-            Color(red: 0.10, green: 0.55, blue: 0.98),
-            Color(red: 0.36, green: 0.83, blue: 0.88),
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
     
     var body: some View {
         VStack {
@@ -46,12 +36,13 @@ struct OnboardingView: View {
             .padding(.horizontal, 16)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
-        .background(backgroundGradient)
+        .background(.appBackground)
     }
 }
 
 
 #Preview {
-    OnboardingView(viewModel: OnboardingViewModel())
+    OnboardingView()
+        .environmentObject(AppCoordinator())
 }
 

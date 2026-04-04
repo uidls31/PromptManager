@@ -9,8 +9,7 @@ struct AppCoordinatorView: View {
         Group {
             switch coordinator.currentRoute {
             case .onboarding:
-                let viewModel = OnboardingViewModel()
-                OnboardingView(viewModel: viewModel)
+                OnboardingView()
             case .main:
                 MainView()
             }

@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class OnboardingViewModel: ObservableObject {
+final class OnboardingViewModel: ObservableObject {
     
     @Published var selection: OnboardingPage.ID?
     

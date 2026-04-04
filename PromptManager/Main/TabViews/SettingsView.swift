@@ -3,10 +3,10 @@ import StoreKit
 
 struct SettingsView: View {
     
+    @ObservedObject var viewModel: SettingsViewModel
     @Environment(\.requestReview) private var requestReview
 
     var body: some View {
-        NavigationStack {
             Form {
                 Section("Legal") {
                     Link(destination: URL(string: "https://apple.com")!) {
@@ -35,10 +35,9 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)
             .background(.appBackground)
             .navigationTitle("Settings")
-        }
     }
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel(termsOfServiceURL: URL(string: "")!, privacyPolicyURL: URL(string: "")!))
 }

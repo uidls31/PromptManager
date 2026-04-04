@@ -8,14 +8,13 @@ struct Prompt: Identifiable, Codable, Equatable, Hashable {
     var isFavorite: Bool
     var creationDate: Date
 
-    init(
-        id: UUID = UUID(),
+    init(id: UUID = UUID(),
         title: String,
         content: String,
         category: Category,
         isFavorite: Bool = false,
-        creationDate: Date = Date()
-    ) {
+        creationDate: Date = Date()) {
+        
         self.id = id
         self.title = title
         self.content = content

@@ -16,15 +16,12 @@ struct AppCoordinatorView: View {
             } else {
                 coordinator.buildMain()
                     .transition(.opacity)
-                    .sheet(item: $coordinator.activeSheet) { sheet in
-                        switch sheet {
-                        case .addPrompt:
-                            AddPromptView()
-                        }
-                    }
             }
         }
         .animation(.easeInOut(duration: 0.8), value: coordinator.currentState)
+        .sheet(item: $coordinator.activeSheet, content: { sheet in
+            coordinator.build(sheet: sheet)
+        })
         .environmentObject(coordinator)
     }
 }

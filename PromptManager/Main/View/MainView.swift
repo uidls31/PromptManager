@@ -2,29 +2,51 @@ import SwiftUI
 
 struct MainView: View {
     
-    @StateObject var viewModel = PromptViewModel()
+    @ObservedObject var promptViewModel: PromptViewModel
+    @ObservedObject var settingsViewModel: SettingsViewModel
+    
+    @EnvironmentObject private var coordinator: AppCoordinator
 
     var body: some View {
-        TabView {
-            PromptListView(viewModel: viewModel, showOnlyFavorites: false)
-                .tabItem {
-                    Label("Library", systemImage: "books.vertical")
-                }
+        TabView(selection: $coordinator.selectedTab) {
             
-            PromptListView(viewModel: viewModel, showOnlyFavorites: true)
-                .tabItem {
-                    Label("Favorites", systemImage: "star.fill")
-                }
+            NavigationStack(path: $coordinator.libraryPath) {
+                PromptListView(viewModel: promptViewModel, showOnlyFavorites: false)
+                    .navigationDestination(for: AppScreen.self) { screen in
+                        coordinator.build(screen: screen)
+                    }
+            }
+            .tabItem {
+                Label("Prompts", systemImage: "folder")
+            }
+            .tag(MainTab.library)
             
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
+            NavigationStack(path: $coordinator.favoritesPath) {
+                PromptListView(viewModel: promptViewModel, showOnlyFavorites: true)
+                    .navigationDestination(for: AppScreen.self) { screen in
+                        coordinator.build(screen: screen)
+                    }
+            }
+            .tabItem {
+                Label("Favorites", systemImage: "star.fill")
+            }
+            .tag(MainTab.favorites)
+            
+            NavigationStack(path: $coordinator.settingsPath) {
+                SettingsView(viewModel: settingsViewModel)
+                    .navigationDestination(for: AppScreen.self) { screen in
+                        coordinator.build(screen: screen)
+                    }
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gear")
+            }
+            .tag(MainTab.settings)
         }
         
     }
 }
 
 #Preview {
-    MainView()
+    MainView(promptViewModel: PromptViewModel(userDefaultsService: UserDefaultsService()), settingsViewModel: SettingsViewModel(termsOfServiceURL: URL(string: "")!, privacyPolicyURL: URL(string: "")!))
 }

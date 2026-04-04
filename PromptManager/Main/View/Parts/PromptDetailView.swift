@@ -4,7 +4,7 @@ struct PromptDetailView: View {
     
     let prompt: Prompt
     
-    @EnvironmentObject private var viewModel: PromptViewModel
+    @ObservedObject var viewModel: PromptViewModel
     
     @State private var copyButtonTitle = "Copy Prompt"
     private var currentPrompt: Prompt {
@@ -82,9 +82,8 @@ struct PromptDetailView: View {
                 title: "Preview",
                 content: "Long sample prompt text for preview.",
                 category: .development
-            )
+            ), viewModel: PromptViewModel(userDefaultsService: UserDefaultsService())
         )
-        .environmentObject(PromptViewModel())
         
     }
 }

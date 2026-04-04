@@ -16,13 +16,24 @@ enum AppSheet: String, Identifiable {
     }
 }
 
+enum MainTab: Hashable {
+    case library, favorites, settings
+}
+
 class AppCoordinator: ObservableObject {
     
     let userDefaultsService: UserDefaultsServiceProtocol
     
     @Published var currentState: AppState
-    @Published var path = NavigationPath()
     @Published var activeSheet: AppSheet?
+    
+    @Published var selectedTab: MainTab = .library
+    @Published var libraryPath = NavigationPath()
+    @Published var favoritesPath = NavigationPath()
+    @Published var settingsPath = NavigationPath()
+    
+    private var sharedPromptViewModel: PromptViewModel?
+    private var sharedSettingsViewModel: SettingsViewModel?
     
     init(userDefaultsService: UserDefaultsServiceProtocol = UserDefaultsService.shared) {
         self.userDefaultsService = userDefaultsService
@@ -36,12 +47,24 @@ class AppCoordinator: ObservableObject {
     }
     
     func push(_ screen: AppScreen) {
-        path.append(screen)
+        switch selectedTab {
+        case .library:
+            libraryPath.append(screen)
+        case .favorites:
+            favoritesPath.append(screen)
+        case .settings:
+            settingsPath.append(screen)
+        }
     }
     
     func pop() {
-        if !path.isEmpty {
-            path.removeLast()
+        switch selectedTab {
+        case .library:
+            if !libraryPath.isEmpty { libraryPath.removeLast() }
+        case .favorites:
+            if !favoritesPath.isEmpty { favoritesPath.removeLast() }
+        case .settings:
+            if !settingsPath.isEmpty { settingsPath.removeLast() }
         }
     }
     
@@ -63,12 +86,46 @@ extension AppCoordinator {
         viewModel.onFinishOnboarding = { [weak self] in
             self?.finishOnboarding()
         }
-         return OnboardingView(viewModel: viewModel)
+        return OnboardingView(viewModel: viewModel)
     }
     
     func buildMain() -> some View {
-        MainView()
+        if sharedPromptViewModel == nil {
+            let viewModel = PromptViewModel(userDefaultsService: userDefaultsService)
+            
+            viewModel.onAddPrompt = { [weak self] in
+                self?.presentSheet(.addPrompt)
+            }
+            
+            viewModel.onPromptSelected = { [weak self] prompt in
+                self?.push(.detail(prompt))
+            }
+            sharedPromptViewModel = viewModel
+            
+        }
+        
+        if sharedSettingsViewModel == nil {
+            guard let termsURL = URL(string: "https://apple.com"),
+                  let privacyURL = URL(string: "https://apple.com") else {
+                fatalError("🛑") }
+            
+            sharedSettingsViewModel = SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
+        }
+        return MainView(promptViewModel: sharedPromptViewModel!, settingsViewModel: sharedSettingsViewModel!)
     }
     
+    func build(screen: AppScreen) -> some View {
+        switch screen {
+        case .detail(let prompt):
+            return PromptDetailView(prompt: prompt, viewModel: sharedPromptViewModel ?? PromptViewModel(userDefaultsService: userDefaultsService))
+        }
+    }
+    
+    func build(sheet: AppSheet) -> some View {
+        switch sheet {
+        case .addPrompt:
+            return AddPromptView(viewModel: sharedPromptViewModel ?? PromptViewModel(userDefaultsService: userDefaultsService))
+        }
+    }
     
 }

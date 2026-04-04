@@ -2,9 +2,11 @@ import SwiftUI
 
 struct PromptListView: View {
     @EnvironmentObject private var viewModel: PromptViewModel
-    
+
     let showOnlyFavorites: Bool
-    
+
+    @State private var showingAddPrompt = false
+
     var body: some View {
         NavigationStack {
             let displayedPrompts = viewModel.filteredPromts(showOnlyFavorites: showOnlyFavorites)
@@ -34,8 +36,24 @@ struct PromptListView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingAddPrompt) {
+                AddPromptView()
+                    .environmentObject(viewModel)
+            }
             .navigationTitle(showOnlyFavorites ? "Favorites" : "Library")
-             .background(.appBackground)
+            .toolbar {
+                if !showOnlyFavorites {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showingAddPrompt = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        .accessibilityLabel("Add prompt")
+                    }
+                }
+            }
+            .background(.appBackground)
         }
     }
 }

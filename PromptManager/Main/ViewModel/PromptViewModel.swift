@@ -49,6 +49,11 @@ final class PromptViewModel: ObservableObject {
         ]
     }
 
+    func addPrompt(title: String, content: String, category: Category) {
+        let newPrompt = Prompt(title: title, content: content, category: category)
+        prompts.insert(newPrompt, at: 0)
+    }
+
     func toggleFavorite(_ prompt: Prompt) {
         guard let index = prompts.firstIndex(where: { $0.id == prompt.id }) else { return }
         prompts[index].isFavorite.toggle()

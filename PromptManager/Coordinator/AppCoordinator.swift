@@ -24,9 +24,7 @@ class AppCoordinator: ObservableObject {
     }()
     
     private lazy var settingsViewModel: SettingsViewModel = {
-        guard let termsURL = URL(string: "https://apple.com"),
-              let privacyURL = URL(string: "https://apple.com") else { fatalError("🛑") }
-        return SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
+        return SettingsViewModel()
     }()
     
     private lazy var onboardingViewModel: OnboardingViewModel = {

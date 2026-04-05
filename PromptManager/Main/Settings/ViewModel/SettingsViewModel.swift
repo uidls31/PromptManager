@@ -3,16 +3,8 @@ import Combine
 
 final class SettingsViewModel: ObservableObject {
     
-    let termsOfServiceURL: URL
-    let privacyPolicyURL: URL
     
-    init(termsOfServiceURL: URL, privacyPolicyURL: URL) {
-        self.termsOfServiceURL = termsOfServiceURL
-        self.privacyPolicyURL = privacyPolicyURL
-    }
-    
-    func didTapRateUs() {
-        
-    }
+    let termsOfServiceURL: URL = URL(string: "https://apple.com")!
+    let privacyPolicyURL: URL = URL(string: "https://apple.com")!
     
 }

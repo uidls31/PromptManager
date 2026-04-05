@@ -24,7 +24,6 @@ struct SettingsView: View {
 
                 Section("Feedback") {
                     Button {
-                        viewModel.didTapRateUs()
                         requestReview()
                     } label: {
                         Label("Rate Us", systemImage: "star")
@@ -40,5 +39,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(viewModel: SettingsViewModel(termsOfServiceURL: URL(string: "")!, privacyPolicyURL: URL(string: "")!))
+    SettingsView(viewModel: SettingsViewModel())
 }

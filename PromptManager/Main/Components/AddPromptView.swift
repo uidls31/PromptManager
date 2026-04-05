@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddPromptView: View {
-    @ObservedObject var viewModel: PromptViewModel
+    @StateObject var viewModel: PromptViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var title: String = ""

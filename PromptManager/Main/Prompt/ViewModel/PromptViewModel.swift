@@ -22,6 +22,10 @@ final class PromptViewModel: ObservableObject {
         }
     }
     
+    func getUpToDatePrompt(for basePrompt: Prompt) -> Prompt {
+        prompts.first(where: { $0.id == basePrompt.id }) ?? basePrompt
+    }
+    
     func filteredPromts(showOnlyFavorites: Bool) -> [Prompt] {
         showOnlyFavorites ? prompts.filter(\.isFavorite) : prompts
     }

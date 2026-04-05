@@ -2,8 +2,8 @@ import SwiftUI
 
 struct MainView: View {
     
-    @ObservedObject var promptViewModel: PromptViewModel
-    @ObservedObject var settingsViewModel: SettingsViewModel
+    @StateObject var promptViewModel: PromptViewModel
+    @StateObject var settingsViewModel: SettingsViewModel
     
     @EnvironmentObject private var coordinator: AppCoordinator
     

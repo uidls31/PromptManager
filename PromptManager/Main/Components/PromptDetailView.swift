@@ -4,11 +4,12 @@ struct PromptDetailView: View {
     
     let prompt: Prompt
     
-    @ObservedObject var viewModel: PromptViewModel
+    @StateObject var viewModel: PromptViewModel
     
     @State private var copyButtonTitle = "Copy Prompt"
+    
     private var currentPrompt: Prompt {
-        viewModel.prompts.first(where: { $0.id == prompt.id }) ?? prompt
+        viewModel.getUpToDatePrompt(for: prompt)
     }
     var body: some View {
         ScrollView {
@@ -31,7 +32,7 @@ struct PromptDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(.ultraThinMaterial)
                     .cornerRadius(16)
-    
+                
                 Button {
                     UIPasteboard.general.string = currentPrompt.content
                     copyButtonTitle = "Copied!"
@@ -80,12 +81,12 @@ struct PromptDetailView: View {
     NavigationStack {
         PromptDetailView(
             prompt: Prompt(id: UUID(),
-                title: "Preview",
-                content: "Long sample prompt text for preview.",
-                category: .development,
+                           title: "Preview",
+                           content: "Long sample prompt text for preview.",
+                           category: .development,
                            isFavorite: true,
                            creationDate: Date()
-            ), viewModel: PromptViewModel(userDefaultsService: UserDefaultsService())
+                          ), viewModel: PromptViewModel(userDefaultsService: UserDefaultsService())
         )
         
     }

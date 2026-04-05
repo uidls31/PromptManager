@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PromptListView: View {
-    @ObservedObject var viewModel: PromptViewModel
+    @StateObject var viewModel: PromptViewModel
     let showOnlyFavorites: Bool
     
     var body: some View {

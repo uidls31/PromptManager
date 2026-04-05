@@ -3,7 +3,7 @@ import StoreKit
 
 struct SettingsView: View {
     
-    @ObservedObject var viewModel: SettingsViewModel
+    @StateObject var viewModel: SettingsViewModel
     @Environment(\.requestReview) private var requestReview
 
     var body: some View {

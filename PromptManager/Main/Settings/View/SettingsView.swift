@@ -9,17 +9,20 @@ struct SettingsView: View {
     var body: some View {
             Form {
                 Section("Legal") {
-                    Link(destination: viewModel.termsOfServiceURL) {
-                        Label("Terms of Service", systemImage: "doc.text")
-                            .foregroundStyle(.primary)
+                    if let urlTerms = viewModel.termsOfServiceURL {
+                        Link(destination: urlTerms) {
+                            Label("Terms of Service", systemImage: "doc.text")
+                                .foregroundStyle(.primary)
+                        }
+                        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                     }
-                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-
-                    Link(destination: viewModel.privacyPolicyURL) {
-                        Label("Privacy Policy", systemImage: "hand.raised")
-                            .foregroundStyle(.primary)
+                    if let urlPrivacy = viewModel.privacyPolicyURL {
+                        Link(destination: urlPrivacy) {
+                            Label("Privacy Policy", systemImage: "hand.raised")
+                                .foregroundStyle(.primary)
+                        }
+                        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                     }
-                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
 
                 Section("Feedback") {

@@ -14,8 +14,18 @@ class AppCoordinator: ObservableObject {
     @Published var favoritesPath = NavigationPath()
     @Published var settingsPath = NavigationPath()
     
-    private var sharedPromptViewModel: PromptViewModel?
-    private var sharedSettingsViewModel: SettingsViewModel?
+    private lazy var promptViewModel: PromptViewModel = {
+        let vm = PromptViewModel(userDefaultsService: userDefaultsService)
+        vm.onAddPrompt = { [weak self] in self?.presentSheet(.addPrompt) }
+        vm.onPromptSelected = { [weak self] prompt in self?.push(.detail(prompt)) }
+        return vm
+    }()
+    
+    private lazy var settingsViewModel: SettingsViewModel = {
+        guard let termsURL = URL(string: "https://apple.com"),
+              let privacyURL = URL(string: "https://apple.com") else { fatalError("🛑") }
+        return SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
+    }()
     
     init(userDefaultsService: UserDefaultsServiceProtocol) {
         self.userDefaultsService = userDefaultsService
@@ -72,44 +82,20 @@ extension AppCoordinator {
     }
     
     func buildMain() -> some View {
-        let promptVM: PromptViewModel
-        if let existing = sharedPromptViewModel {
-            promptVM = existing
-        } else {
-            promptVM = PromptViewModel(userDefaultsService: userDefaultsService)
-            promptVM.onAddPrompt = { [weak self] in self?.presentSheet(.addPrompt) }
-            promptVM.onPromptSelected = { [weak self] prompt in self?.push(.detail(prompt)) }
-            sharedPromptViewModel = promptVM
-        }
-        
-        let settingsVM: SettingsViewModel
-        if let existing = sharedSettingsViewModel {
-            settingsVM = existing
-        } else {
-            guard let termsURL = URL(string: "https://apple.com"),
-                  let privacyURL = URL(string: "https://apple.com") else { fatalError("🛑")}
-            settingsVM = SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
-            sharedSettingsViewModel = settingsVM
-        }
-        
-        return MainView(promptViewModel: promptVM, settingsViewModel: settingsVM)
+        return MainView(promptViewModel: promptViewModel, settingsViewModel: settingsViewModel)
     }
     
     func build(screen: AppScreen) -> some View {
-        guard let viewModel = sharedPromptViewModel else { fatalError("🛑") }
-        
         switch screen {
         case .detail(let prompt):
-            return PromptDetailView(prompt: prompt, viewModel: viewModel)
+            return PromptDetailView(prompt: prompt, viewModel: promptViewModel)
         }
     }
     
     func build(sheet: AppSheet) -> some View {
-        guard let viewModel = sharedPromptViewModel else { fatalError("🛑") }
-        
         switch sheet {
         case .addPrompt:
-            return AddPromptView(viewModel: viewModel)
+            return AddPromptView(viewModel: promptViewModel)
         }
     }
     

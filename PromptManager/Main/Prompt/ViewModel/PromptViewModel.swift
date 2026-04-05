@@ -46,6 +46,7 @@ final class PromptViewModel: ObservableObject {
     private func savePrompts() {
         guard let data = try? JSONEncoder().encode(prompts) else { return }
         userDefaultsService.setData(data, for: .saveKeyPrompts)
+        userDefaultsService.synchronize()
     }
     
     func didTapAddPrompt() {

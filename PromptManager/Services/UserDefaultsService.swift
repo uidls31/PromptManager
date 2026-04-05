@@ -5,6 +5,7 @@ protocol UserDefaultsServiceProtocol {
     func bool(for flag: UserDefaultsService.Flag) -> Bool
     func data(for flag: UserDefaultsService.Flag) -> Data?
     func setData(_ data: Data, for flag: UserDefaultsService.Flag)
+    func synchronize()
 }
 
 class UserDefaultsService: UserDefaultsServiceProtocol {
@@ -23,10 +24,15 @@ class UserDefaultsService: UserDefaultsServiceProtocol {
     
     func setData(_ data: Data, for flag: Flag) {
         defaults.set(data, forKey: flag.rawValue)
+        defaults.synchronize()
     }
     
     func data(for flag: Flag) -> Data? {
         defaults.data(forKey: flag.rawValue)
+    }
+    
+    func synchronize() {
+        defaults.synchronize()
     }
     
     

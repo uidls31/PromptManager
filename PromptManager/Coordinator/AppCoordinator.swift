@@ -1,10 +1,12 @@
 import Combine
 import SwiftUI
+import SwiftData
 
 
 class AppCoordinator: ObservableObject {
     
     let userDefaultsService: UserDefaultsServiceProtocol
+    let modelContainer: ModelContainer
     
     @Published var currentState: AppState
     @Published var activeSheet: AppSheet?
@@ -15,7 +17,7 @@ class AppCoordinator: ObservableObject {
     @Published var settingsPath = NavigationPath()
     
     private lazy var promptViewModel: PromptViewModel = {
-        let vm = PromptViewModel(userDefaultsService: userDefaultsService)
+        let vm = PromptViewModel(modelContainer: modelContainer)
         vm.onAddPrompt = { [weak self] in self?.presentSheet(.addPrompt) }
         vm.onPromptSelected = { [weak self] prompt in self?.push(.detail(prompt)) }
         return vm
@@ -27,8 +29,18 @@ class AppCoordinator: ObservableObject {
         return SettingsViewModel(termsOfServiceURL: termsURL, privacyPolicyURL: privacyURL)
     }()
     
-    init(userDefaultsService: UserDefaultsServiceProtocol) {
+    private lazy var onboardingViewModel: OnboardingViewModel = {
+        let vm = OnboardingViewModel()
+        vm.onFinishOnboarding = { [weak self] in
+            self?.finishOnboarding()
+        }
+        return vm
+    }()
+    
+    init(userDefaultsService: UserDefaultsServiceProtocol,
+         modelContainer: ModelContainer) {
         self.userDefaultsService = userDefaultsService
+        self.modelContainer = modelContainer
         let hasCompletedOnboarding = userDefaultsService.bool(for: .hasCompletedOnboarding)
         currentState = hasCompletedOnboarding ? .main : .onboarding
     }
@@ -73,29 +85,24 @@ class AppCoordinator: ObservableObject {
 extension AppCoordinator {
     
     func buildOnboarding() -> some View {
-        let viewModel = OnboardingViewModel()
-        
-        viewModel.onFinishOnboarding = { [weak self] in
-            self?.finishOnboarding()
-        }
-        return OnboardingView(viewModel: viewModel)
+        return OnboardingView(viewModel: onboardingViewModel)
     }
     
     func buildMain() -> some View {
-        return MainView(promptViewModel: promptViewModel, settingsViewModel: settingsViewModel)
+        return MainView(promptViewModel: self.promptViewModel, settingsViewModel: self.settingsViewModel)
     }
     
     func build(screen: AppScreen) -> some View {
         switch screen {
         case .detail(let prompt):
-            return PromptDetailView(prompt: prompt, viewModel: promptViewModel)
+            return PromptDetailView(prompt: prompt, viewModel: self.promptViewModel)
         }
     }
     
     func build(sheet: AppSheet) -> some View {
         switch sheet {
         case .addPrompt:
-            return AddPromptView(viewModel: promptViewModel)
+            return AddPromptView(viewModel: self.promptViewModel)
         }
     }
     

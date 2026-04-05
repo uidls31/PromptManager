@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PromptListView: View {
-    @StateObject var viewModel: PromptViewModel
+    @ObservedObject var viewModel: PromptViewModel
     let showOnlyFavorites: Bool
     
     var body: some View {
@@ -53,8 +53,4 @@ struct PromptListView: View {
             })
             .background(.appBackground)
     }
-}
-
-#Preview {
-    PromptListView(viewModel: PromptViewModel(userDefaultsService: UserDefaultsService()), showOnlyFavorites: false)
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddPromptView: View {
-    @StateObject var viewModel: PromptViewModel
+    @ObservedObject var viewModel: PromptViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var title: String = ""
@@ -66,8 +66,4 @@ struct AddPromptView: View {
             }
         }
     }
-}
-
-#Preview {
-    AddPromptView(viewModel: PromptViewModel(userDefaultsService: UserDefaultsService()))
 }

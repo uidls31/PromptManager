@@ -4,7 +4,7 @@ struct PromptDetailView: View {
     
     let prompt: Prompt
     
-    @StateObject var viewModel: PromptViewModel
+    @ObservedObject var viewModel: PromptViewModel
     
     @State private var copyButtonTitle = "Copy Prompt"
     
@@ -72,22 +72,5 @@ struct PromptDetailView: View {
                 }
             }
         }
-    }
-}
-
-
-
-#Preview {
-    NavigationStack {
-        PromptDetailView(
-            prompt: Prompt(id: UUID(),
-                           title: "Preview",
-                           content: "Long sample prompt text for preview.",
-                           category: .development,
-                           isFavorite: true,
-                           creationDate: Date()
-                          ), viewModel: PromptViewModel(userDefaultsService: UserDefaultsService())
-        )
-        
     }
 }

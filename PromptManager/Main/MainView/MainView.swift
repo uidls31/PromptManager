@@ -1,9 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
     
-    @StateObject var promptViewModel: PromptViewModel
-    @StateObject var settingsViewModel: SettingsViewModel
+    @ObservedObject var promptViewModel: PromptViewModel
+    @ObservedObject var settingsViewModel: SettingsViewModel
     
     @EnvironmentObject private var coordinator: AppCoordinator
     
@@ -48,7 +49,3 @@ struct MainView: View {
     }
 }
 
-#Preview {
-    MainView(promptViewModel: PromptViewModel(userDefaultsService: UserDefaultsService()), settingsViewModel: SettingsViewModel(termsOfServiceURL: URL(string: "")!, privacyPolicyURL: URL(string: "")!))
-        .environmentObject(AppCoordinator(userDefaultsService: UserDefaultsService()))
-}

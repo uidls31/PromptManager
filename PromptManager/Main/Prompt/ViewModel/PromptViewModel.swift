@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftData
 
 final class PromptViewModel: ObservableObject {
     
@@ -8,18 +9,18 @@ final class PromptViewModel: ObservableObject {
     var onAddPrompt: (() -> Void)?
     var onPromptSelected: ((Prompt) -> Void)?
     
-    private let userDefaultsService: UserDefaultsServiceProtocol
+    private let modelContext: ModelContext
     
-    init(userDefaultsService: UserDefaultsServiceProtocol) {
-        self.userDefaultsService = userDefaultsService
+    init(modelContainer: ModelContainer) {
+        self.modelContext = modelContainer.mainContext
         loadPrompts()
     }
     
     private func loadPrompts() {
-        if let data = userDefaultsService.data(for: .saveKeyPrompts),
-           let decoded = try? JSONDecoder().decode([Prompt].self, from: data) {
-            prompts = decoded
-        }
+        let descriptor = FetchDescriptor<PromptRecord>(
+            sortBy: [SortDescriptor(\.creationDate, order: .reverse)]
+        )
+        prompts = (try? modelContext.fetch(descriptor).map(\.prompt)) ?? []
     }
     
     func getUpToDatePrompt(for basePrompt: Prompt) -> Prompt {
@@ -31,26 +32,39 @@ final class PromptViewModel: ObservableObject {
     }
     
     func addPrompt(title: String, content: String, category: Category) {
-        let newPrompt = Prompt(id: UUID(),title: title, content: content, category: category, isFavorite: false, creationDate: Date())
-        prompts.insert(newPrompt, at: 0)
-        savePrompts()
+        let record = PromptRecord(
+            title: title,
+            content: content,
+            categoryRawValue: category.rawValue,
+            isFavorite: false,
+            creationDate: Date()
+        )
+
+        modelContext.insert(record)
+        try? modelContext.save()
+        loadPrompts()
     }
     
     func toggleFavorite(_ prompt: Prompt) {
-        guard let index = prompts.firstIndex(where: { $0.id == prompt.id }) else { return }
-        prompts[index].isFavorite.toggle()
-        savePrompts()
+        let predicate = #Predicate<PromptRecord> { $0.id == prompt.id }
+        var descriptor = FetchDescriptor<PromptRecord>(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        guard let record = try? modelContext.fetch(descriptor).first else { return }
+        record.isFavorite.toggle()
+        try? modelContext.save()
+        loadPrompts()
     }
     
     func deletePrompt(_ prompt: Prompt) {
-        prompts.removeAll(where: { $0.id == prompt.id })
-        savePrompts()
-    }
-    
-    private func savePrompts() {
-        guard let data = try? JSONEncoder().encode(prompts) else { return }
-        userDefaultsService.setData(data, for: .saveKeyPrompts)
-        userDefaultsService.synchronize()
+        let predicate = #Predicate<PromptRecord> { $0.id == prompt.id }
+        var descriptor = FetchDescriptor<PromptRecord>(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        guard let record = try? modelContext.fetch(descriptor).first else { return }
+        modelContext.delete(record)
+        try? modelContext.save()
+        loadPrompts()
     }
     
     func didTapAddPrompt() {
